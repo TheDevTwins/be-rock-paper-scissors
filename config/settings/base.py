@@ -6,8 +6,8 @@ from pathlib import Path
 import environ
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
-# be_rock_paper_scissors/
-APPS_DIR = ROOT_DIR / "be_rock_paper_scissors"
+# src/
+APPS_DIR = ROOT_DIR / "src"
 env = environ.Env()
 
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
@@ -74,7 +74,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    "be_rock_paper_scissors.users.apps.UsersConfig",
+    "src.users.apps.UsersConfig",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -83,7 +83,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # MIGRATIONS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#migration-modules
-MIGRATION_MODULES = {"sites": "be_rock_paper_scissors.contrib.sites.migrations"}
+MIGRATION_MODULES = {"sites": "src.contrib.sites.migrations"}
 
 # AUTHENTICATION
 # ------------------------------------------------------------------------------
@@ -182,7 +182,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                "be_rock_paper_scissors.utils.context_processors.settings_context",
+                "src.utils.context_processors.settings_context",
             ],
         },
     }
@@ -263,9 +263,9 @@ ACCOUNT_EMAIL_REQUIRED = True
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-ACCOUNT_ADAPTER = "be_rock_paper_scissors.users.adapters.AccountAdapter"
+ACCOUNT_ADAPTER = "src.users.adapters.AccountAdapter"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-SOCIALACCOUNT_ADAPTER = "be_rock_paper_scissors.users.adapters.SocialAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "src.users.adapters.SocialAccountAdapter"
 
 # django-rest-framework
 # -------------------------------------------------------------------------------

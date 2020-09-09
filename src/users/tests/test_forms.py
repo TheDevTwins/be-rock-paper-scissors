@@ -1,7 +1,7 @@
 import pytest
 
-from be_rock_paper_scissors.users.forms import UserCreationForm
-from be_rock_paper_scissors.users.tests.factories import UserFactory
+from src.users.forms import UserCreationForm
+from src.users.tests.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
 

@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
-from be_rock_paper_scissors.users.api.views import UserViewSet
+from src.users.api.views import UserViewSet
 
 if settings.DEBUG:
     router = DefaultRouter()

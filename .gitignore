@@ -321,7 +321,7 @@ tags
 
 ### Project template
 
-be_rock_paper_scissors/media/
+src/media/
 
 .pytest_cache/
 

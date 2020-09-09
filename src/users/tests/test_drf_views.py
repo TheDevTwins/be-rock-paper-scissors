@@ -1,8 +1,8 @@
 import pytest
 from django.test import RequestFactory
 
-from be_rock_paper_scissors.users.api.views import UserViewSet
-from be_rock_paper_scissors.users.models import User
+from src.users.api.views import UserViewSet
+from src.users.models import User
 
 pytestmark = pytest.mark.django_db
 
