@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     'background_task',
     'polymorphic',
 
+    'src.players.apps.PlayersConfig',
+    'src.sessions.apps.SessionsConfig',
 ]
 
 MIDDLEWARE = [
