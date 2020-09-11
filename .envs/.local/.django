@@ -1,4 +1,2 @@
-# General
-# ------------------------------------------------------------------------------
-USE_DOCKER=yes
-IPYTHONDIR=/app/.ipython
+DJANGO_SETTINGS_MODULE=config.settings.local
+REDIS_URL=redis://redis:6379/1

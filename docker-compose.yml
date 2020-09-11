@@ -1,0 +1,35 @@
+version: '3'
+
+volumes:
+  rps_postgres: {}
+  rps_redis: {}
+
+services:
+  django: &django
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    image: rps_local_django
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - .:/app
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+    ports:
+      - "8000:8000"
+    command: /start
+
+  postgres:
+    image: postgres:12
+    volumes:
+      - rps_postgres:/var/lib/postgresql/data
+    env_file:
+      - ./.envs/.local/.postgres
+
+  redis:
+    image: redis:5.0
+    volumes:
+      - rps_redis:/data

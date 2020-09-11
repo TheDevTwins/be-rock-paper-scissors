@@ -1,10 +1,16 @@
 #!/bin/bash
 
-set -o errexit
-set -o pipefail
-set -o nounset
+# Exit on failiure(including ERR trap), exit on unset variables,
+# print each command, piping non-zero exit code also exits
+set -Eeuxo pipefail
 
 
+if [ "${DJANGO_SETTINGS_MODULE}" != "config.settings.local" ]; then
+  python compose/local/django/get_credentials.py
+  set -a
+  source .source
+  set +a
+fi
 
 
 if [ -z "${POSTGRES_USER}" ]; then
@@ -14,25 +20,9 @@ fi
 export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
 
 postgres_ready() {
-python << END
-import sys
-
-import psycopg2
-
-try:
-    psycopg2.connect(
-        dbname="${POSTGRES_DB}",
-        user="${POSTGRES_USER}",
-        password="${POSTGRES_PASSWORD}",
-        host="${POSTGRES_HOST}",
-        port="${POSTGRES_PORT}",
-    )
-except psycopg2.OperationalError:
-    sys.exit(-1)
-sys.exit(0)
-
-END
+  python compose/local/django/check_postgres_conn.py
 }
+
 until postgres_ready; do
   >&2 echo 'Waiting for PostgreSQL to become available...'
   sleep 1
