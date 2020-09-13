@@ -5,7 +5,7 @@ from channels.consumer import StopConsumer
 
 from src.channels_utils.consumers import GenericApiConsumer
 from src.players.models import Player, Avatar
-from src.players.serializers import PlayerSerializer
+from src.players.serializers import PlayerSerializer, AvatarSerializer
 
 from .models import Session
 
@@ -39,7 +39,24 @@ class SessionConsumer(GenericApiConsumer):
         raise StopConsumer
 
     def receive_json(self, content, **kwargs):
-        pass
+        action = content.get('type')
+        data = content.get('data')
+
+        session = self.get_object()
+        player = self.player
+
+        if action == 'update_avatar':
+            serializer = AvatarSerializer(player.avatar, data=data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+            session.send_to_channels_group('avatar_updated', {'player_id': player.id, 'avatar': serializer.data})
+        elif action == 'update_name':
+            name = data.get('name')
+            player.name = name
+            player.save()
+
+            session.send_to_channels_group('name_updated', {'player_id': player.id, 'name': name})
 
     def session_updated(self, event):
         self.send_json(event)
@@ -48,4 +65,10 @@ class SessionConsumer(GenericApiConsumer):
         self.send_json(event)
 
     def player_left(self, event):
+        self.send_json(event)
+
+    def avatar_updated(self, event):
+        self.send_json(event)
+
+    def name_updated(self, event):
         self.send_json(event)
