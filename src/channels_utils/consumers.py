@@ -6,7 +6,7 @@ from .settings import channels_settings
 
 
 class GenericApiConsumer(JsonWebsocketConsumer):
-    permission_classes = channels_settings.DEFAULT_PERMISSION_CLASSES
+    permission_classes = []
     queryset = None
     lookup_field = 'pk'
     lookup_url_kwarg = None

@@ -6,7 +6,7 @@ from .constants import *
 
 
 class Session(models.Model):
-    code = models.CharField(max_length=6, unique=True)
+    code = models.CharField(max_length=6)
     status = models.PositiveIntegerField(choices=STATUSES, default=PENDING)
 
     @staticmethod

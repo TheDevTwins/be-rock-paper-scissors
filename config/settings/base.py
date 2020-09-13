@@ -116,12 +116,6 @@ REST_FRAMEWORK = {
 
 DATABASES = {"default": env.db("DATABASE_URL")}
 
-CHANNELS = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'src.channels_utils.permissions.IsAuthenticated',
-    ),
-}
-
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
