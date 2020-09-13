@@ -3,18 +3,19 @@ import jwt
 from django.conf import settings
 
 from rest_framework.decorators import action
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, CreateModelMixin, UpdateModelMixin
+from rest_framework.mixins import RetrieveModelMixin, CreateModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from src.players.models import Player
+from src.players.serializers import PlayerSerializer
 
 from .models import Session
 from .serializers import SessionSerializer
 from .constants import FINISHED, PLAYING
 
 
-class SessionViewSet(CreateModelMixin, GenericViewSet):
+class SessionViewSet(CreateModelMixin, RetrieveModelMixin, GenericViewSet):
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
     permission_classes = []
@@ -37,3 +38,12 @@ class SessionViewSet(CreateModelMixin, GenericViewSet):
                                   settings.SECRET_KEY, algorithm='HS256').decode('utf-8')
 
         return Response(access_token)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        players = instance.players.all()
+
+        return Response({
+            'session': self.get_serializer(instance).data,
+            'players': PlayerSerializer(players, many=True).data
+        })
