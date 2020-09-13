@@ -21,7 +21,7 @@ class SessionConsumer(GenericApiConsumer):
         super().connect()
         session = self.get_object()
         is_admin = session.players.count() == 0
-        name = self.scope['params'].get('username', f'Guest #{randrange(1000, 9999)}')
+        name = f'Guest #{randrange(1000, 9999)}'
 
         self.player = Player.objects.create(name=name, session=session, is_admin=is_admin)
 

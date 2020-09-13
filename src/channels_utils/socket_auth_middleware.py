@@ -14,6 +14,6 @@ class SocketAuthMiddleware:
     def __call__(self, scope):
         close_old_connections()
 
-        scope['params'] = dict(parse_qsl(scope['query_string'].decode()))
+        # scope['params'] = dict(parse_qsl(scope['query_string'].decode()))
 
         return self.inner(scope)
