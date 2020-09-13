@@ -4,3 +4,4 @@ PLAYER_TYPES = (
     (PLAYER, 'player'),
     (SPECTATOR, 'spectator'),
 )
+
