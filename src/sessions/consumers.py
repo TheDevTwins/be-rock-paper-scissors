@@ -57,6 +57,16 @@ class SessionConsumer(GenericApiConsumer):
             player.save()
 
             session.send_to_channels_group('name_updated', {'player_id': player.id, 'name': name})
+        elif action == 'update_player_type':
+            player_type = data.get('player_type')
+            player.player_type = player_type
+            player.save()
+
+            session.send_to_channels_group('player_type_updated', {'player_id': player.id, 'player_type': player_type})
+        elif action == 'send_message':
+            message = data.get('message')
+
+            session.send_to_channels_group('message_received', {'message': message})
 
     def session_updated(self, event):
         self.send_json(event)
@@ -71,4 +81,10 @@ class SessionConsumer(GenericApiConsumer):
         self.send_json(event)
 
     def name_updated(self, event):
+        self.send_json(event)
+
+    def player_type_updated(self, event):
+        self.send_json(event)
+
+    def message_received(self, event):
         self.send_json(event)
