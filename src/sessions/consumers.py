@@ -66,7 +66,7 @@ class SessionConsumer(GenericApiConsumer):
         elif action == 'send_message':
             message = data.get('message')
 
-            session.send_to_channels_group('message_received', {'message': message})
+            session.send_to_channels_group('message_received', {'message': message, 'player_id': player.id})
 
     def session_updated(self, event):
         self.send_json(event)
