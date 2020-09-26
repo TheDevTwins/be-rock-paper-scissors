@@ -19,3 +19,5 @@ class Player(models.Model):
 
     avatar = models.OneToOneField(Avatar, on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ('id',)

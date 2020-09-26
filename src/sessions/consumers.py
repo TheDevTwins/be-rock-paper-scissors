@@ -32,8 +32,17 @@ class SessionConsumer(GenericApiConsumer):
     def disconnect(self, close_code):
         session = self.get_object()
 
+        was_admin = self.player.is_admin
+
         session.send_to_channels_group('player_left', {'id': self.player.id})
         self.player.delete()
+
+        if was_admin:
+            new_admin = session.players.first()
+            new_admin.is_admin = True
+            new_admin.save()
+
+            session.send_to_channels_group('admin_updated', {'player_id': new_admin.id})
 
         async_to_sync(self.channel_layer.group_discard)(session.channels_group_name, self.channel_name)
         raise StopConsumer
@@ -67,6 +76,12 @@ class SessionConsumer(GenericApiConsumer):
             message = data.get('message')
 
             session.send_to_channels_group('message_received', {'message': message, 'player_id': player.id})
+        elif action == 'start_game':
+            if not player.is_admin:
+                return
+
+            session.start_game()
+            session.send_to_channels_group('game_started', {})
 
     def session_updated(self, event):
         self.send_json(event)
@@ -87,4 +102,10 @@ class SessionConsumer(GenericApiConsumer):
         self.send_json(event)
 
     def message_received(self, event):
+        self.send_json(event)
+
+    def game_started(self, event):
+        self.send_json(event)
+
+    def admin_updated(self, event):
         self.send_json(event)
