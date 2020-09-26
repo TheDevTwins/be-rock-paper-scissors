@@ -19,5 +19,10 @@ class Player(models.Model):
 
     avatar = models.OneToOneField(Avatar, on_delete=models.CASCADE)
 
+    points = models.IntegerField(default=10)
+
+    pick = models.PositiveSmallIntegerField(choices=PICKS, null=True)
+    state = models.PositiveSmallIntegerField(choices=PLAYER_STATES, default=IN_GAME)
+
     class Meta:
         ordering = ('id',)

@@ -5,6 +5,7 @@ from channels.consumer import StopConsumer
 
 from src.channels_utils.consumers import GenericApiConsumer
 from src.players.models import Player, Avatar
+from src.players.constants import PLAYER
 from src.players.serializers import PlayerSerializer, AvatarSerializer
 
 from .models import Session
@@ -24,7 +25,7 @@ class SessionConsumer(GenericApiConsumer):
         name = f'Guest #{randrange(1000, 9999)}'
 
         avatar = Avatar.objects.create()
-        self.player = Player.objects.create(name=name, session=session, is_admin=is_admin, avatar=avatar)
+        self.player = Player.objects.create(name=name, session=session, is_admin=is_admin, avatar=avatar, player_type=0)
 
         async_to_sync(self.channel_layer.group_add)(session.channels_group_name, self.channel_name)
         session.send_to_channels_group('player_joined', PlayerSerializer(self.player).data)
@@ -37,12 +38,15 @@ class SessionConsumer(GenericApiConsumer):
         session.send_to_channels_group('player_left', {'id': self.player.id})
         self.player.delete()
 
-        if was_admin:
-            new_admin = session.players.first()
-            new_admin.is_admin = True
-            new_admin.save()
+        try:
+            if was_admin:
+                new_admin = session.players.first()
+                new_admin.is_admin = True
+                new_admin.save()
 
-            session.send_to_channels_group('admin_updated', {'player_id': new_admin.id})
+                session.send_to_channels_group('admin_updated', {'player_id': new_admin.id})
+        except:
+            pass
 
         async_to_sync(self.channel_layer.group_discard)(session.channels_group_name, self.channel_name)
         raise StopConsumer
@@ -82,6 +86,20 @@ class SessionConsumer(GenericApiConsumer):
 
             session.start_game()
             session.send_to_channels_group('game_started', {})
+        elif action == 'make_pick':
+            player.pick = data.get('pick')
+            player.save()
+
+            session.send_to_channels_group('player_picked', {'player_id': player.id})
+
+            if not session.players.filter(pick__isnull=True, player_type=PLAYER).count():
+                session.compute_points()
+
+                reveal = [
+                    {'player_id': p.id, 'pick': p.pick, 'points': p.points} for
+                    p in session.players.filter(player_type=PLAYER)
+                ]
+                session.send_to_channels_group('picks_revealed', reveal)
 
     def session_updated(self, event):
         self.send_json(event)
@@ -105,6 +123,12 @@ class SessionConsumer(GenericApiConsumer):
         self.send_json(event)
 
     def game_started(self, event):
+        self.send_json(event)
+
+    def player_picked(self, event):
+        self.send_json(event)
+
+    def picks_revealed(self, event):
         self.send_json(event)
 
     def admin_updated(self, event):

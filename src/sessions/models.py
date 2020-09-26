@@ -1,6 +1,8 @@
 from django.db import models
+from django.db.models import F
 
 from src.channels_utils.functions import send_to_channels_group
+from src.players.constants import *
 
 from .constants import *
 
@@ -25,3 +27,14 @@ class Session(models.Model):
     def start_game(self):
         self.status = PLAYING
         self.save()
+
+    def compute_points(self):
+        players = self.players.all()
+
+        rocks = players.filter(pick=ROCK)
+        papers = players.filter(pick=PAPER)
+        scissors = players.filter(pick=SCISSORS)
+
+        rocks.update(points=F('points')-papers.count())
+        papers.update(points=F('points')-scissors.count())
+        scissors.update(points=F('points')-rocks.count())
