@@ -21,3 +21,7 @@ class Session(models.Model):
         if additional is None:
             additional = {}
         send_to_channels_group(self.channels_group_name, {'type': event_type, 'data': data, **additional})
+
+    def start_game(self):
+        self.status = PLAYING
+        self.save()
