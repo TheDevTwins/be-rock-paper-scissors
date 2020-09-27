@@ -25,7 +25,7 @@ class SessionConsumer(GenericApiConsumer):
         name = f'Guest #{randrange(1000, 9999)}'
 
         avatar = Avatar.objects.create()
-        self.player = Player.objects.create(name=name, session=session, is_admin=is_admin, avatar=avatar, player_type=0)
+        self.player = Player.objects.create(name=name, session=session, is_admin=is_admin, avatar=avatar)
 
         async_to_sync(self.channel_layer.group_add)(session.channels_group_name, self.channel_name)
         session.send_to_channels_group('player_joined', PlayerSerializer(self.player).data)
@@ -92,14 +92,8 @@ class SessionConsumer(GenericApiConsumer):
 
             session.send_to_channels_group('player_picked', {'player_id': player.id})
 
-            if not session.players.filter(pick__isnull=True, player_type=PLAYER).count():
-                session.compute_points()
-
-                reveal = [
-                    {'player_id': p.id, 'pick': p.pick, 'points': p.points} for
-                    p in session.players.filter(player_type=PLAYER)
-                ]
-                session.send_to_channels_group('picks_revealed', reveal)
+            if session.players.filter(pick=None, player_type=PLAYER).count() == 0:
+                session.start_waiting()
 
     def session_updated(self, event):
         self.send_json(event)
@@ -129,6 +123,9 @@ class SessionConsumer(GenericApiConsumer):
         self.send_json(event)
 
     def picks_revealed(self, event):
+        self.send_json(event)
+
+    def timer_updated(self, event):
         self.send_json(event)
 
     def admin_updated(self, event):

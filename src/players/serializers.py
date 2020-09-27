@@ -17,5 +17,5 @@ class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = (
-            'id', 'player_type', 'name', 'is_admin', 'avatar', 'points', 'pick'
+            'id', 'player_type', 'name', 'is_admin', 'avatar', 'points', 'pick', 'state'
         )
