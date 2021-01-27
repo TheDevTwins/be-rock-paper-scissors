@@ -33,3 +33,11 @@ services:
     image: redis:5.0
     volumes:
       - rps_redis:/data
+
+  time_handler:
+    <<: *django
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: python manage.py handle_time
