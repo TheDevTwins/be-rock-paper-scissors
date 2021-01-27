@@ -85,7 +85,7 @@ class SessionConsumer(GenericApiConsumer):
                 return
 
             session.start_game()
-            session.send_to_channels_group('game_started', {})
+            session.send_to_channels_group('game_started')
         elif action == 'make_pick':
             player.pick = data.get('pick')
             player.save()
@@ -129,4 +129,10 @@ class SessionConsumer(GenericApiConsumer):
         self.send_json(event)
 
     def admin_updated(self, event):
+        self.send_json(event)
+
+    def started_playing(self, event):
+        self.send_json(event)
+
+    def started_waiting(self, event):
         self.send_json(event)

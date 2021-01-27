@@ -21,7 +21,9 @@ class Session(models.Model):
     def channels_group_name(self):
         return self.get_channels_group_name(self.id)
 
-    def send_to_channels_group(self, event_type: str, data: any, additional=None):
+    def send_to_channels_group(self, event_type: str, data=None, additional=None):
+        if data is None:
+            data = {}
         if additional is None:
             additional = {}
         send_to_channels_group(self.channels_group_name, {'type': event_type, 'data': data, **additional})
@@ -32,12 +34,14 @@ class Session(models.Model):
         self.start_playing()
 
     def start_waiting(self):
+        self.send_to_channels_group('started_waiting')
         self.timer = 5
         self.status = WAITING
         self.save()
         self.compute_points()
 
     def start_playing(self):
+        self.send_to_channels_group('started_playing')
         self.players.filter(state=IN_GAME).update(pick=None)
         self.timer = 20
         self.status = PLAYING
